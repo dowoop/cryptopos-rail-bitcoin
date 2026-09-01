@@ -40,16 +40,32 @@ Zero runtime dependencies beyond `cryptopos-core`.
 
 | entry point | rail key | binding |
 |---|---|---|
-| `bitcoin-testnet4` | `bitcoin:testnet4/native:btc` | **per-sale** — a fresh address derived from the merchant's watch-only account key |
+| `bitcoin-testnet4` | `bitcoin:testnet4/native:btc` | **per-sale, if the host supplies it** — this rail requires a fresh address per sale and does not derive one |
 
 ## Two things worth knowing before you use it
 
-**It refuses a reused receiving address.** `capture_baseline` rejects a
-recipient with any transaction history. That is not fussiness: a shared address
-cannot bind a payment to a sale, because a transaction that confirms after one
-sale expires is indistinguishable from a payment for the next one. The host is
-expected to supply a fresh address per sale, and this rail is the reason the
-host needs an extended public key rather than a single address.
+**It refuses an address that has ALREADY been paid — and the host owns the
+binding.** `capture_baseline` rejects a recipient with any transaction history.
+That is not fussiness: a shared address cannot bind a payment to a sale,
+because a transaction that confirms after one sale expires is indistinguishable
+from a payment for the next one.
+
+**Be exact about what that check does and does not catch**, because the table
+above used to say this rail derived the address itself and it does not. It
+derives nothing; the host does, from an extended public key, and this rail is
+the reason the host needs one rather than a single address. History is the only
+thing checked, so the case it cannot see is the one that matters:
+
+1. A host assigns the same never-used address to sales A and B.
+2. Both call `capture_baseline` before either customer pays. The address has no
+   history, so **both pass**.
+3. B's customer pays.
+4. A polls first and claims the transaction.
+5. A settles on B's money; B ends in review.
+
+"It refuses a reused receiving address" is therefore true of a *previously
+paid* address and false of *concurrent* reuse. Allocating each sale its own
+derived index is the host's job, and nothing in this package enforces it.
 
 **Settlement waits for block time.** Bitcoin's testnet4 block interval has been
 measured at a 20-minute median, which is longer than a typical price-lock
