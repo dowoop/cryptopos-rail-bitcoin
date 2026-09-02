@@ -151,7 +151,35 @@ address_for_sale(1)                      # -> 'tb1qrfxr69jqnhwufxgkqgcdep9prq4j4
 ```
 
 Use `"bc"` as the human-readable part for mainnet, `"tb"` for test networks.
-Store the index on the sale; never reuse one.
+
+**Three things about indices that cost money if you skip them.**
+
+*Derive from the account key, not the master key.* Paste the **account** xpub —
+what a wallet exports for `m/84'/1'/0'` on testnet — so `0/index` is that
+account's external chain and the addresses are ones your wallet already watches.
+Deriving `0/index` from a master xpub, as the example above does with a BIP-32
+test vector, gives addresses at a non-standard path your wallet will never scan.
+
+*An index is spent the moment it is shown to anyone, and can never be reused.*
+A payment instruction cannot be withdrawn. A customer who kept the QR from a
+finished sale can pay it tomorrow, and if that address now belongs to a new
+sale the transfer arrives after the new baseline, inside the new window, and
+settles the wrong invoice. No cooldown is long enough, because no finite time
+makes an old QR unpayable. **This rail is a partial backstop**:
+`capture_baseline` refuses a recipient with any transaction history, so an
+address that was already paid cannot be handed out again — but an address that
+was shown and never paid has no history, so nothing here stops you reissuing
+it. That one is yours to prevent.
+
+*Keep the allocation counter durable, and mind the gap limit.* Never reusing
+means abandoned checkouts consume indices, while a wallet restoring from the
+seed scans forward only until it meets a run of unused addresses — commonly
+**20**, BIP-44's gap limit. So keep the watching wallet's gap limit above your
+realistic run of unpaid sales, and persist the next-index counter: losing it
+restarts allocation at zero and hands a live address to a second sale, which is
+the reuse failure by another route. If you cannot raise the gap limit, apply
+backpressure on opening sales. Recycling addresses is not the remedy, however
+much it looks like one.
 
 **The module accepts extended *public* keys only.** There is no private
 derivation and no signing operation anywhere in it, so a host that derives
