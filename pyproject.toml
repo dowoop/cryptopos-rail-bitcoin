@@ -1,6 +1,6 @@
 [project]
 name = "cryptopos-rail-bitcoin"
-version = "0.1.0"
+version = "0.1.1"
 description = "A dependency-free Bitcoin testnet4 payment rail for CryptoPoS."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -44,7 +44,9 @@ build-backend = "hatchling.build"
 packages = ["src/cryptopos_rail_bitcoin"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/", "tests/", "pyproject.toml", "README.md", "LICENSE"]
+# `tools/` ships so that a cloner can run the README gate this package's
+# own testing section tells them to run.
+include = ["src/", "tests/", "tools/", "pyproject.toml", "README.md", "LICENSE"]
 
 [tool.ruff]
 line-length = 110
