@@ -1,6 +1,9 @@
 [project]
 name = "cryptopos-rail-bitcoin"
-version = "0.1.1"
+# The version is dynamic because two declarations of this one fact drifted apart
+# by a patch release. The module is now the single source, and the distribution
+# metadata is derived from it instead of disagreeing with it.
+dynamic = ["version"]
 description = "A dependency-free Bitcoin testnet4 payment rail for CryptoPoS."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -39,6 +42,9 @@ Source = "https://github.com/dowoop/cryptopos-rail-bitcoin"
 [build-system]
 requires = ["hatchling==1.32.0"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/cryptopos_rail_bitcoin/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cryptopos_rail_bitcoin"]
