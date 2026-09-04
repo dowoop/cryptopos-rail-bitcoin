@@ -97,6 +97,10 @@ class BitcoinTransportFailures(unittest.TestCase):
 		self.assertEqual(handlers[1].proxies, {})
 		request, timeout = opener.requests[0]
 		self.assertEqual((request.method, request.full_url, timeout), ("GET", ENDPOINT, 2))
+		self.assertEqual(
+			request.get_header("User-agent"),
+			f"cryptopos-rail-bitcoin/{bitcoin.__version__}",
+		)
 		self.assertEqual(opener.response.read_limit, 4)
 
 	def test_default_transport_accepts_an_explicit_zero_length_body(self):

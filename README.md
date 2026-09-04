@@ -37,8 +37,14 @@ it with no code change.
 
 # Cookbook
 
-The five-call sequence, the settlement states, and the four host obligations are
-in [cryptopos-core's cookbook](https://github.com/dowoop/cryptopos-core#the-five-calls).
+The five-call sequence, the settlement states, and the **five** host obligations
+are in [cryptopos-core's cookbook](https://github.com/dowoop/cryptopos-core#the-five-calls)
+— the obligations have their own heading at
+[Five host obligations](https://github.com/dowoop/cryptopos-core#five-host-obligations).
+This said *four* until 2026-09-04, and the one it left out is the fifth:
+`needs-review` is a real outcome and needs somewhere to go. A host that
+implemented the four it was told about can collect, persist and claim money
+correctly and still have nowhere for the money a human must look at.
 This file covers only what is specific to Bitcoin.
 
 ## 1. Configure it
@@ -49,6 +55,8 @@ Three keys, and only the first is required:
 configuration = {
     "endpoint": "https://mempool.space/testnet4/api",   # any Esplora-compatible API
     "timeout_seconds": 10,                              # optional, per request
+    # "transport": my_client,                           # optional; anything with a
+    #                                                   # .get(url, timeout, max_bytes)
 }
 ```
 

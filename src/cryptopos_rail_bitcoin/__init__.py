@@ -61,6 +61,12 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 		return None
 
 
+def _default_user_agent():
+	from . import __version__
+
+	return f"cryptopos-rail-bitcoin/{__version__}"
+
+
 class _HttpsTransport:
 	"""Bounded HTTPS GET without redirects or ambient authentication."""
 
@@ -70,7 +76,7 @@ class _HttpsTransport:
 	def get(self, url, timeout, max_bytes):
 		request = urllib.request.Request(
 			url,
-			headers={"Accept": "application/json, text/plain", "User-Agent": "cryptopos-core/1"},
+			headers={"Accept": "application/json, text/plain", "User-Agent": _default_user_agent()},
 			method="GET",
 		)
 		with self._opener.open(request, timeout=timeout) as response:
